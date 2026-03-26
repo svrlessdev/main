@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVRLESS.DEV | Serverless Web Architecture</title>
+<style>
+:root {
+    --bg: #05070a;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --accent: #22d3ee;
+    --accent-glow: rgba(34, 211, 238, 0.2);
+    --text-main: #ffffff;
+    --text-dim: #94a3b8;
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+body { background-color: var(--bg); color: var(--text-main); font-family: 'Segoe UI', sans-serif; line-height: 1.6; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.glass { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+
+/* NAVIGATION */
+nav { padding: 30px 0; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.8rem; font-weight: 900; color: white; text-decoration: none; }
+.logo span { color: var(--accent); }
+
+/* HERO & TOGGLE */
+header { text-align: center; padding: 60px 0 40px; }
+header h1 { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+.pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 30px 0; font-weight: bold; }
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* TECH STACK */
+.tech-stack { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 60px; }
+.tech-pill { padding: 6px 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; color: var(--text-dim); }
+
+/* PRICING GRID */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 80px; }
+.card { padding: 40px 30px; border-radius: 25px; transition: var(--transition); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; flex-direction: column; }
+.card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 15px 30px -10px var(--accent-glow); }
+.card.selected { border-color: var(--accent); background: rgba(34, 211, 238, 0.08); }
+.card h3 { color: var(--accent); font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.price { font-size: 2.8rem; font-weight: 800; margin-bottom: 15px; }
+.price span { font-size: 0.9rem; color: var(--text-dim); }
+
+.feature-list { list-style: none; margin-bottom: 25px; flex-grow: 1; }
+.feature-list li { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 8px; display: flex; align-items: center; }
+.feature-list li::before { content: "✓"; color: var(--accent); margin-right: 10px; font-weight: bold; }
+
+/* BUTTONS */
+.card-actions { display: flex; flex-direction: column; gap: 10px; }
+.btn { display: block; width: 100%; padding: 14px; border-radius: 12px; text-align: center; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; text-decoration: none; font-size: 0.9rem; }
+.btn-solid { background: var(--accent); color: var(--bg); }
+.btn-outline { border: 1px solid var(--accent); color: var(--accent); background: transparent; }
+
+/* TIMELINE */
+.timeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 100px; }
+.step { text-align: center; padding: 30px; border-radius: 20px; }
+.step-num { font-size: 2.5rem; font-weight: 900; color: rgba(255,255,255,0.05); margin-bottom: -20px; }
+
+/* FAQ */
+.faq-section { margin-bottom: 100px; }
+.faq-item { margin-bottom: 12px; border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+.faq-question { padding: 20px; background: rgba(255,255,255,0.02); cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; }
+.faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.3s ease-out; color: var(--text-dim); font-size: 0.95rem; line-height: 1.8; }
+.faq-item.active .faq-answer { padding: 10px 20px 20px; max-height: 400px; }
+
+/* CONTACT FORM */
+.contact-wrap { max-width: 600px; margin: 0 auto 120px; padding: 40px; border-radius: 30px; display:flex; flex-direction:column; gap:12px; }
+input, textarea { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
+input:focus, textarea:focus { border-color: var(--accent); }
+/* Selected Card Animation */
+.card.selected {
+    border-color: var(--accent);
+    background: rgba(34, 211, 238, 0.08);
+    transform: scale(1.03);
+    box-shadow: 0 20px 40px -10px var(--accent-glow);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 20px 40px -10px var(--accent-glow); }
+    50% { box-shadow: 0 25px 50px -15px rgba(34, 211, 238, 0.3); }
+}
+
+/* Pricing Toggle Glow */
+.switch input:checked + .slider {
+    background-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.switch input + .slider {
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(24px);
+    box-shadow: 0 0 6px var(--accent-glow);
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <nav>
+        <a href="#" class="logo">SVR<span>LESS.DEV</span></a>
+        <div style="font-size: 0.8rem; color: var(--text-dim);">EST. 2026</div>
+    </nav>
+
+    <header>
+        <h1>Websites Without <br><span style="color:var(--accent)">The Overhead.</span></h1>
+        <div class="pricing-toggle">
+            <span>One-Time</span>
+            <label class="switch">
+                <input type="checkbox" id="billingToggle" onchange="togglePricing()">
+                <span class="slider"></span>
+            </label>
+            <span>Subscription</span>
+        </div>
+    </header>
+
+    <div class="tech-stack">
+        <span class="tech-pill">Next.js Edge</span>
+        <span class="tech-pill">AWS Lambda</span>
+        <span class="tech-pill">Stripe API</span>
+        <span class="tech-pill">Headless CMS</span>
+        <span class="tech-pill">GitHub CI/CD</span>
+    </div>
+
+    <div class="grid">
+        <!-- STANDARD -->
+        <div class="card glass" onclick="selectPlan('Standard', this)">
+            <h3>Standard</h3>
+            <div class="price" id="price1">$799</div>
+            <ul class="feature-list">
+                <li>5 Optimized Pages</li>
+                <li>Edge Hosting Included</li>
+                <li>SSL & Security Suite</li>
+                <li>Mobile-First UI</li>
+            </ul>
+            <div class="card-actions">
+                <div class="btn btn-outline">Select Plan</div>
+            </div>
+        </div>
+        
+        <!-- PRO -->
+        <div class="card glass" onclick="selectPlan('Pro', this)">
+            <h3>Professional</h3>
+            <div class="price" id="price2">$1,999</div>
+            <ul class="feature-list">
+                <li>Unlimited Dynamic Pages</li>
+                <li>Headless CMS Dashboard</li>
+                <li>Serverless Form Logic</li>
+                <li>Custom API Endpoints</li>
+            </ul>
+            <div class="card-actions">
+                <div class="btn btn-outline">Select Plan</div>
+            </div>
+        </div>
+
+        <!-- CUSTOM -->
+        <div class="card glass" onclick="selectPlan('Custom', this)">
+            <h3>Custom</h3>
+            <div class="price" id="price3">Quote</div>
+            <ul class="feature-list">
+                <li>Full Web Ecosystems</li>
+                <li>Serverless Databases</li>
+                <li>User Auth Systems</li>
+                <li>Third-party Webhooks</li>
+            </ul>
+            <div class="card-actions">
+                <div class="btn btn-outline">Enquire</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <h2 style="text-align: center; margin-bottom: 40px;">The SVRLESS Sprint</h2>
+    <div class="timeline-grid">
+        <div class="step glass">
+            <div class="step-num">01</div>
+            <h4>Strategy</h4>
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Planning your niche-specific edge architecture.</p>
+        </div>
+        <div class="step glass">
+            <div class="step-num">02</div>
+            <h4>Development</h4>
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Rapid coding and serverless logic integration.</p>
+        </div>
+        <div class="step glass">
+            <div class="step-num">03</div>
+            <h4>Deployment</h4>
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Live launch on a global high-speed CDN.</p>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <h2 style="text-align: center; margin-bottom: 40px;">Operational Intelligence</h2>
+        <div class="faq-item glass">
+            <div class="faq-question" onclick="toggleFaq(this)">One-Time vs Subscription Ownership? <span>+</span></div>
+            <div class="faq-answer">One-Time clients own 100% of the source code. Subscription clients pay for "Website-as-a-Service"—ownership remains with Svrless.dev, but we handle all security and maintenance.</div>
+        </div>
+        <div class="faq-item glass">
+            <div class="faq-question" onclick="toggleFaq(this)">Can I take the code if I cancel a monthly plan? <span>+</span></div>
+            <div class="faq-answer">The HTML is the shell, but the "Serverless Engine" (forms/DB) belongs to our cloud infrastructure. On cancellation, the engine stops. You may "buy-out" the full code at any point.</div>
+        </div>
+        <div class="faq-item glass">
+            <div class="faq-question" onclick="toggleFaq(this)">How do I edit my site? <span>+</span></div>
+            <div class="faq-answer">We provide a Headless CMS dashboard (Sanity/Contentful). You can change text and images easily without touching any code.</div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="contact-wrap glass">
+        <input type="text" id="businessName" placeholder="Business Name" required>
+        <input type="email" id="userEmail" placeholder="Your Email Address" required>
+        <textarea id="userMessage" placeholder="Describe your vision..." rows="4" required></textarea>
+        <button id="sendEmailBtn" class="btn btn-solid">Submit Project Brief</button>
+    </section>
+</div>
+
+<script>
+const pricing = { 
+    one: ["$799", "$1,999", "Quote"], 
+    sub: ["$99<span>/mo</span>", "$249<span>/mo</span>", "Contact"] 
+};
+
+function togglePricing() {
+    const isMonthly = document.getElementById('billingToggle').checked;
+    document.getElementById('price1').innerHTML = isMonthly ? pricing.sub[0] : pricing.one[0];
+    document.getElementById('price2').innerHTML = isMonthly ? pricing.sub[1] : pricing.one[1];
+    document.getElementById('price3').innerHTML = isMonthly ? pricing.sub[2] : pricing.one[2];
+}
+
+function selectPlan(name, el) {
+    const type = document.getElementById('billingToggle').checked ? " (Monthly)" : " (One-Time)";
+    document.getElementById('project_type')?.remove();
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.id = 'project_type';
+    hiddenInput.value = name + type;
+    document.body.appendChild(hiddenInput);
+
+    document.querySelectorAll('.card').forEach(c => {
+        c.classList.remove('selected');
+        const btn = c.querySelector('.btn-outline, .btn-solid');
+        if(btn) {
+            btn.className = "btn btn-outline";
+            btn.innerText = name === "Custom" ? "Enquire" : "Select Plan";
+        }
+    });
+
+    el.classList.add('selected');
+    const activeBtn = el.querySelector('.btn-outline');
+    if(activeBtn) {
+        activeBtn.className = "btn btn-solid";
+        activeBtn.innerText = "Plan Selected";
+    }
+
+    document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' });
+}
+
+function toggleFaq(el) {
+    const item = el.parentElement;
+    item.classList.toggle('active');
+    el.querySelector('span').innerText = item.classList.contains('active') ? "-" : "+";
+}
+
+// Auto-send email on submit
+document.getElementById('sendEmailBtn').addEventListener('click', () => {
+    const plan = document.getElementById('project_type')?.value;
+    const name = document.getElementById('businessName').value;
+    const email = document.getElementById('userEmail').value;
+    const message = document.getElementById('userMessage').value;
+
+    if(!plan || !name || !email || !message){
+        alert("Please fill all fields and select a plan!");
+        return;
+    }
+
+    const subject = encodeURIComponent(`Project Brief – ${plan}`);
+    const body = encodeURIComponent(
+        `Plan: ${plan}\nBusiness Name: ${name}\nEmail: ${email}\n\nVision:\n${message}`
+    );
+
+    window.location.href = `mailto:svrless.dev@gmail.com?subject=${subject}&body=${body}`;
+});
+</script>
+
+</body>
+</html>
